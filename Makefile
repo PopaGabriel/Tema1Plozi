@@ -1,7 +1,5 @@
-build:
-	gcc -g censor.c -o censor -Wall
-run: censor.o censor_group.o
-	gcc -g -o censor censor.o censor_group.o
+run: censor.o censor_group.o error.o
+	gcc -g -o censor censor.o censor_group.o error.o
 	valgrind --track-origins=yes --leak-check=full ./censor bad_words
 
 censor.o: censor.c
@@ -10,8 +8,10 @@ censor.o: censor.c
 censor_group.o: censor_group.c censor_group.h
 	gcc -g -c censor_group.c
 
-run_no_memory:
-	./censor input
+error.o: error.c error.h
+	gcc -g -c error.c
+
+
 clean:
 	rm censor
 	rm censor.o

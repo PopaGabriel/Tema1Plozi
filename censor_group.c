@@ -1,4 +1,5 @@
 #include "censor_group.h"
+#include "error.h"
 
 Group *create_group()
 {
@@ -32,8 +33,11 @@ char *get_a_word(FILE *bad_words_file)
     char *return_string = malloc(1);
     return_string[0] = '\0';
 
-    while ((aux = fgetc(bad_words_file)) != EOF && aux != ' ' && aux != '\n')
-    {
+    while ((aux = fgetc(bad_words_file)) != EOF
+			&& aux != ' ' 
+			&& aux != '\n' 
+			&& ((aux >= 97 && aux <= 122) || (aux >= 65 && aux <= 90) || aux == '*'))
+    {	
         return_string = (char *)realloc(return_string, strlen(return_string) + 2);
         strncat(return_string, &aux, 1);
     }
@@ -68,9 +72,10 @@ void filter_words(char *word, Group *prefix_group, Group *suffix_group, Group *n
         add_to_group(word, normal_group);
         break;
     case 0:
-        add_to_group(word, prefix_group);
+        add_to_group(word + 1, prefix_group);
         break;
     default:
+	word[strlen(word) - 1] = '\0';
         add_to_group(word, suffix_group);
         break;
     }
