@@ -1,5 +1,4 @@
 #include "censor_group.h"
-#include "error.h"
 
 Group *create_group()
 {
@@ -27,7 +26,7 @@ void add_to_group(char *word, Group *group)
     group->group_words[group->size_group - 1] = strdup(word);
 }
 
-char *get_a_word(FILE *bad_words_file)
+Error *get_a_word(FILE *bad_words_file)
 {
     char aux;
     char *return_string = malloc(1);
@@ -41,7 +40,12 @@ char *get_a_word(FILE *bad_words_file)
         return_string = (char *)realloc(return_string, strlen(return_string) + 2);
         strncat(return_string, &aux, 1);
     }
-    return return_string;
+
+	if (aux == EOF) {
+		free(return_string);
+		return init_error(1, NULL);
+	}
+	return  init_error(0, return_string);
 }
 
 void print(Group *group, char *message)
@@ -69,15 +73,15 @@ void filter_words(char *word, Group *prefix_group, Group *suffix_group, Group *n
     switch (index_of(word, '*'))
     {
     case -1:
-        add_to_group(word, normal_group);
-        break;
+		add_to_group(word, normal_group);
+		break;
     case 0:
-        add_to_group(word + 1, prefix_group);
-        break;
+		add_to_group(word + 1, suffix_group);
+		break;
     default:
-	word[strlen(word) - 1] = '\0';
-        add_to_group(word, suffix_group);
-        break;
+		word[strlen(word) - 1] = '\0';
+		add_to_group(word, prefix_group);
+		break;
     }
 }
 
@@ -94,15 +98,16 @@ void free_group(Group *aux)
 
 void fill_dicts(Group *words_no_star, Group *words_prefix, Group *words_suffix, char *name)
 {
-    char *aux;
+    Error *aux;
     FILE *bad_words_file = fopen(name, "r");
-
-    while (strlen((aux = get_a_word(bad_words_file))) != 0)
+    while (!is_EOF(aux = get_a_word(bad_words_file)))
     {
-        filter_words(aux, words_prefix, words_suffix, words_no_star);
-        free(aux);
+		if (aux->content && !((char *)aux->content)[0] == '\0') {
+			filter_words(aux->content, words_prefix, words_suffix, words_no_star);
+		}
+        free_error(aux);
     }
-    free(aux);
+    free_error(aux);
     fclose(bad_words_file);
 }
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <error.h>
+#include "error.h"
 
 typedef struct group_words
 {
@@ -11,7 +11,7 @@ typedef struct group_words
 
 Group *create_group();
 void add_to_group(char *word, Group *group);
-char *get_a_word(FILE *bad_words_file);
+Error *get_a_word(FILE *bad_words_file);
 void print(Group *group, char *message);
 int index_of(char *haystack, char needle);
 void filter_words(char *word, Group *prefix_group, Group *suffix_group, Group *normal_group);
