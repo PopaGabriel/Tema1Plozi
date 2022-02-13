@@ -1,5 +1,5 @@
 run: censor.o censor_group.o error.o
-	cp input input_aux
+	cp input_stress input_aux
 	gcc -g -o censor censor.o censor_group.o error.o
 	valgrind --track-origins=yes --leak-check=full ./censor bad_words input_aux
 
