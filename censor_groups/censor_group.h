@@ -9,6 +9,8 @@ typedef struct group_words
     char **group_words;
 } * Group_p, Group;
 
+
+void test();
 Group *create_group();
 void add_to_group(char *word, Group *group);
 Error *get_a_word(FILE *bad_words_file);

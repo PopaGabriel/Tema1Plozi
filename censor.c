@@ -91,7 +91,6 @@ void censor(char *name_file_censor, Group *words_no_star, Group *words_prefix,
 		Group *words_suffix) {
 	FILE *target = fopen(name_file_censor, "r+");
 	Error *aux;
-
 	while (!is_EOF(aux = get_a_word(target))) {
 		if (aux->content
 			&& !((char *)aux->content)[0] == '\0'
